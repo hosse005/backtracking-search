@@ -15,7 +15,17 @@
   ;; get start pos coordinates
   (setf start-pos (start-pos-lookup filename startpos maze)))
 
+(defun interpret-value (pos)
+  "Function to read value from give coordinate and interpret its value"
+  ;; Get the value
+  (setf val (nth (second pos) (nth (first pos) maze)))
 
+  ;; Determine if this is a viable state and return
+  (cond ((string= val "O") t)
+        ((string= val "O*") t)
+        ((string= val "+") nil)
+        ((string= val "E") 'done)))
+         
 (defun go-left (currpos)
   "Helper function for go-left action"
   ;; First, perform bounds checking in x direction
