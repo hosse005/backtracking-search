@@ -17,6 +17,14 @@
 
 (defun interpret-value (pos)
   "Function to read value from give coordinate and interpret its value"
+  ;; Perform bounds checking
+  (if (or 
+	   (< (first pos) 0) 
+	   (> (first pos) (list-length maze))
+	   (< (second pos) 0)
+	   (> (second pos) (list-length (first maze))))
+	  (return-from interpret-value nil))
+  
   ;; Get the value
   (setf val (nth (second pos) (nth (first pos) maze)))
 
@@ -28,37 +36,21 @@
          
 (defun go-left (currpos)
   "Helper function for go-left action"
-  ;; First, perform bounds checking in x direction
-  (when (< (- (second currpos) 1) 0)
-	(return-from go-left nil))
-
   ;; Move 1 space left
   (setf nextpos (list (first currpos) (- (second currpos) 1))))
 
 (defun go-right (currpos)
   "Helper function for go-right action"
-  ;; First, perform bounds checking in x direction
-  (when (> (+ (second currpos) 1) (list-length (first maze)))
-	(return-from go-right nil))
-
   ;; Move 1 space right
   (setf nextpos (list (first currpos) (+ (second currpos) 1))))
 
 (defun go-up (currpos)
   "Helper function for go-up action"
-  ;; First, perform bounds checking in y direction
-  (when (< (- (first currpos) 1) 0)
-	(return-from go-up nil))
-
   ;; Move 1 space up
   (setf nextpos (list (- (first currpos) 1) (second currpos))))
 
 (defun go-down (currpos)
   "Helper function for go-down action"
-  ;; First, perform bounds checking in y direction
-  (when (> (+ (first currpos) 1) (list-length maze))
-	(return-from go-down nil))
-
   ;; Move 1 space down
   (setf nextpos (list (+ (first currpos) 1) (second currpos))))
 
