@@ -15,6 +15,28 @@
   ;; get start pos coordinates
   (setf start-pos (start-pos-lookup filename startpos maze)))
 
+(defun back-track (currpos)
+  "Recursive backtracking search function"
+  ;; create an action list
+  (setf actions (list #'go-left #'go-right #'go-up #'go-down))
+
+  ;; check if we are in the desired state
+  (if (string= (interpret-value currpos) 'done)
+	  (return-from back-track 'success))
+
+  ;; check if the current position has already been marked as visited
+  (if (string= (interpret-value currpos) 'marked) (return-from back-track nil))
+
+  ;; mark the current position as being visited
+  (mark (currpos))
+  )
+
+  
+
+(defun mark (pos)
+  "Function to mark current position as having been visited"
+  (setf (nth (second pos) (nth (first pos) maze)) 'O*))
+
 (defun interpret-value (pos)
   "Function to read value from give coordinate and interpret its value"
   ;; Perform bounds checking
@@ -30,7 +52,7 @@
 
   ;; Determine if this is a viable state and return
   (cond ((string= val "O") t)
-        ((string= val "O*") t)
+        ((string= val "O*") 'marked)
         ((string= val "+") nil)
         ((string= val "E") 'done)))
          
