@@ -13,7 +13,13 @@
   (setf maze (read-input-maze filename))
   
   ;; get start pos coordinates
-  (setf start-pos (start-pos-lookup filename startpos maze)))
+  (setf start-pos (start-pos-lookup filename startpos maze))
+
+  ;; kick of the recursive search and report results
+  (if (string= (back-track start-pos) 'success)
+	  (print "Found a solution")
+	  (print "No solution found..")))
+	  
 
 (defun back-track (currpos)
   "Recursive backtracking search function"
@@ -28,10 +34,20 @@
   (if (string= (interpret-value currpos) 'marked) (return-from back-track nil))
 
   ;; mark the current position as being visited
-  (mark (currpos))
-  )
-
+  (mark currpos)
   
+  ;; loop over the possible actions list
+  ;; for each possible action, determine if it will land you in an allowed state
+  ;; for each acceptable next state, progress to the next level in the tree
+  ;; if none of the four directions lead to an acceptable state, we return
+  ;; nil and bounce back to the given node's parent in the recursion
+  ;; Stop when we have landed on desired state or we have returned nil from
+  ;; each level from the root (the entry point) in the recursion
+  (loop for action in actions
+  	   do (if (string/= (interpret-value (funcall action currpos)) nil)
+  			  (if (string= (back-track (funcall action currpos)) 'success)
+  				  (return-from back-track 'success))))
+  (return-from back-track nil))
 
 (defun mark (pos)
   "Function to mark current position as having been visited"
@@ -58,21 +74,25 @@
          
 (defun go-left (currpos)
   "Helper function for go-left action"
+  (print "In go-left")
   ;; Move 1 space left
   (setf nextpos (list (first currpos) (- (second currpos) 1))))
 
 (defun go-right (currpos)
   "Helper function for go-right action"
+  (print "In go-right")
   ;; Move 1 space right
   (setf nextpos (list (first currpos) (+ (second currpos) 1))))
 
 (defun go-up (currpos)
   "Helper function for go-up action"
+  (print "In go-up")
   ;; Move 1 space up
   (setf nextpos (list (- (first currpos) 1) (second currpos))))
 
 (defun go-down (currpos)
   "Helper function for go-down action"
+  (print "In go-down")
   ;; Move 1 space down
   (setf nextpos (list (+ (first currpos) 1) (second currpos))))
 
@@ -96,14 +116,17 @@
 		(cond ((= i 1)
 			   (setf (nth 0 (nth 1 maze)) 'O*)  ; pos 1 0 (per hw spec)
 			   (write-output "ex-maze-out.dat" maze)
+			   (setf (nth 0 (nth 1 maze)) 'O)   ; reset maze
 			   (list 1 0))     ; return starting coordinates for search use
 			  ((= i 2)
 			   (setf (nth 0 (nth 3 maze)) 'O*)  ; pos 3 0 (per hw spec)
 			   (write-output "ex-maze-out.dat" maze)
+			   (setf (nth 0 (nth 3 maze)) 'O)   ; reset maze
 			   (list 3 0))     ; return starting coordinates
 			  ((= i 3)
 			   (setf (nth 0 (nth 5 maze)) 'O*)  ; pos 5 0 (per hw spec)
 			   (write-output "ex-maze-out.dat" maze)
+			   (setf (nth 0 (nth 5 maze)) 'O)   ; reset maze
 			   (list 5 0)))))) ; return starting coordinates
 
 (defun write-output (outfile maze)
