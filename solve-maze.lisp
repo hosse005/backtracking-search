@@ -30,7 +30,11 @@
 	  (write-to-file "No solution found.." t))
 
   ;; Dump the maze traversal
-  (write-maze-to-file maze nil))
+  (write-maze-to-file maze nil)
+
+  ;; Dump number of states visited
+  (write-to-file "Number of states visited:" nil)
+  (write-to-file (write-to-string state-cnt) t))
 
 (defun back-track (currpos)
   "Recursive backtracking search function"
@@ -59,8 +63,10 @@
   ;; Stop when we have landed on desired state or we have returned nil from
   ;; each level from the root (the entry point) in the recursion
   (loop for action in actions
-  	   do (if (string/= (interpret-value (funcall action currpos t)) nil)
-				(if (string= (back-track (funcall action currpos nil)) 'success)
+  	   do (if (and (string/= (interpret-value (funcall action currpos nil)) nil)
+                   (string/= (interpret-value (funcall action currpos nil)) 
+                             'marked))
+				(if (string= (back-track (funcall action currpos t)) 'success)
 					(return-from back-track 'success))))
   (return-from back-track nil))
 
@@ -87,38 +93,38 @@
         ((string= val "+") nil)
         ((string= val "E") 'done)))
          
-(defun go-left (currpos check)
+(defun go-left (currpos move)
   "Helper function for go-left action"
 
   ;; log if we are actually moving to next sate
-  (unless check (write-to-file "go-left" nil))
+  (when move (write-to-file "go-left" nil))
 
   ;; Move 1 space left
   (setf nextpos (list (first currpos) (- (second currpos) 1))))
 
-(defun go-right (currpos check)
+(defun go-right (currpos move)
   "Helper function for go-right action"
 
   ;; log if we are actually moving to next sate
-  (unless check (write-to-file "go-right" nil))
+  (when move (write-to-file "go-right" nil))
 
   ;; Move 1 space right
   (setf nextpos (list (first currpos) (+ (second currpos) 1))))
 
-(defun go-up (currpos check)
+(defun go-up (currpos move)
   "Helper function for go-up action"
 
   ;; log if we are actually moving to next sate
-  (unless check (write-to-file "go-up" nil))
+  (when move (write-to-file "go-up" nil))
 
   ;; Move 1 space up
   (setf nextpos (list (- (first currpos) 1) (second currpos))))
 
-(defun go-down (currpos check)
+(defun go-down (currpos move)
   "Helper function for go-down action"
 
   ;; log if we are actually moving to next sate
-  (unless check (write-to-file "go-down" nil))
+  (when move (write-to-file "go-down" nil))
 
   ;; Move 1 space down
   (setf nextpos (list (+ (first currpos) 1) (second currpos))))
