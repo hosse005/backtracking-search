@@ -22,7 +22,7 @@
   (setf start-pos (start-pos-lookup ifile startpos maze))
 
   ;; Direction dump header
-  (write-to-file "Actions taken:" t)
+  (write-to-file "Actions taken:" nil)
 
   ;; kick of the recursive search and report results
   (if (string= (back-track start-pos) 'success)
@@ -176,7 +176,24 @@
 				(setf (nth 7 (nth 11 maze)) 'O*)  ; pos 11 7
 				(write-maze-to-file maze t)
 				(setf (nth 7 (nth 11 maze)) 'O)   ; reset maze
-				(list 11 7)))))) ; return starting coordinates
+				(list 11 7)))) ; return starting coordinates
+		((string= filename "test2.dat") 
+		 (cond ((= i 1)
+				(setf (nth 2 (nth 0 maze)) 'O*)  ; pos 0 2
+				(write-maze-to-file maze t)
+				(setf (nth 2 (nth 0 maze)) 'O)   ; reset maze
+				(list 0 2))     ; return starting coordinates for search use
+			   ((= i 2)
+				(setf (nth 11 (nth 20 maze)) 'O*)  ; pos 20 11
+				(write-maze-to-file maze t)
+				(setf (nth 11 (nth 20 maze)) 'O)   ; reset maze
+				(list 20 11))     ; return starting coordinates
+			   ((= i 3)
+				(setf (nth 14 (nth 0 maze)) 'O*)  ; pos 0 14
+				(write-maze-to-file maze t)
+				(setf (nth 14 (nth 0 maze)) 'O)   ; reset maze
+				(list 0 14)))))) ; return starting coordinates
+
 
 (defun write-maze-to-file (maze input)
   "Helper function for writing input maze to file"
